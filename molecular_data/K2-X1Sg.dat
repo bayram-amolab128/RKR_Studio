@@ -1,32 +1,21 @@
-
 name = K2
 state = X1Sigma_g+
 kaiser = 0
-intmethod = spline
-Vmax = 0
-space = 0
-ladderspace = 0
-errortol = 0
+intmethod = Fleming
+Vmax = 80
+step size = 0.1
+ladderspace = 3
+errortol = 1e-9
 m1 = 39.0983
 m2 = 39.0983
 netcharge = 0
 
-we = 92.021
-xwe = 0.2829
-ywe = -0.002055
-zwe = 0
-_1we = 0
-_2we = 0
-_3we = 0
-_4we = 0
-_5we = 0
-_6we = 0
+Y1,0 = 92.021
+Y2,0 = -0.2829
+Y3,0 = -0.002055
 
-Be = 0.056743
-ae = 0.000165
-ye = 0
-_1e = 0
-_2e = 0
+Y0,1 = 0.056743
+Y1,1 = -0.000165
 
 Te = 0
 De = 8.63e-8

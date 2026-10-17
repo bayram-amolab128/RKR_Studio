@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <cstddef>
 #include <stdexcept>
+#include <memory>
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_vector.h>
@@ -286,7 +287,9 @@ SplineNaK::Spline SplineFit_to_RKR(std::vector<double>& V, std::vector<double>& 
     
     SplineNaK::Spline s;
     //spline containers
+    printf("Spline fitted through the raw RKR data0\n");
     s.setPoints(r, V);
+    printf("Spline fitted through the raw RKR data1\n");
     
     V_spl.clear();
     r_spl.clear();
@@ -301,11 +304,11 @@ SplineNaK::Spline SplineFit_to_RKR(std::vector<double>& V, std::vector<double>& 
     //    std::end(r)
     //);
 
-     // iterator to max element in r
-   //auto rmax = *std::max_element(
-   //    std::begin(r),
-   //    std::end(r)
-   //);
+    // iterator to max element in r
+    //auto rmax = *std::max_element(
+    //    std::begin(r),
+    //    std::end(r)
+    //);
    double rmin = cp.rmin;
    double rmax = cp.rmax;
 
@@ -517,7 +520,6 @@ void estimateInnerWall_params( SplineNaK::Spline &s,
 
 }
 
-
 void construct_ExtraPCurve(RKRContext &rkr, const CalcParam &cp,
                          std::vector<double>& V_inner, std::vector<double>& r_inner,
                          std::vector<double>& V_outer, std::vector<double>& r_outer){
@@ -531,13 +533,13 @@ void construct_ExtraPCurve(RKRContext &rkr, const CalcParam &cp,
     double fF=0.0;
     double gF=0.0;
 
-    std::cout<<"exrtrapolation level: "<<cp.v_ex_level<<std::endl;
+    std::cout<<"exrtrapolation level: "<<cp.v_ex_level +1<<std::endl;
     double vmin = cp.vmin;
     double vmax = cp.vmax;
     double v_step = cp.v_step;
     double abserrtol      = cp.abserrtol;    //fixed abs. error tolerance.
     double relerrtol      = cp.relerrtol;    //fixed rel. error
-    double v_start = cp.v_ex_level;     //start extrapolation from v_ex_level.
+    double v_start = cp.v_ex_level + 1;     //start extrapolation from v_ex_level + 1.
 
     double n = double(cp.n);
     double A = cp.A;
@@ -547,19 +549,12 @@ void construct_ExtraPCurve(RKRContext &rkr, const CalcParam &cp,
     std::cout<<"vstart of extrapolation "<<v_start<<std::endl;
     for (double v = v_start; v <= vmax; v +=v_step) {
         Gv = rkr.ve.G(v) + rkr.Te;
-        
         rv_ = cp.A/(Gv-cp.B);
-
         r1 = std::pow(rv_, 1.0/n);
-
-   
         fF = rkr.ve.f(useFleming,v, rkr.Cu, rkr.mu, vmin, abserrtol,relerrtol, nullptr, w);
-
-
         //this is where Near Dissociation extrapolation need to be applied.
         r2_ = 2.0*fF;
-        r2 = r2_+r1;
-       
+        r2  = r2_+r1;
 
         //fill the inner and outer wall vectors
         r_inner.push_back(r1);
@@ -575,6 +570,58 @@ void construct_ExtraPCurve(RKRContext &rkr, const CalcParam &cp,
     gsl_integration_workspace_free(w);
 }
 
+void align_extrapolated_branches_to_raw(const std::vector<double>& raw_V,
+                                        const std::vector<double>& raw_r,
+                                        std::vector<double>& V_inner,
+                                        std::vector<double>& r_inner,
+                                        std::vector<double>& V_outer,
+                                        std::vector<double>& r_outer,
+                                        const CalcParam& cp)
+{
+    constexpr double r_tolerance = 1e-8;
+
+    if (raw_V.size() != raw_r.size()) {
+        throw std::runtime_error("align_extrapolated_branches_to_raw: raw V and r size mismatch.");
+    }
+    if (V_inner.size() != r_inner.size() || V_outer.size() != r_outer.size()) {
+        throw std::runtime_error("align_extrapolated_branches_to_raw: branch V and r size mismatch.");
+    }
+    if (cp.i_re >= raw_r.size()) {
+        throw std::runtime_error("align_extrapolated_branches_to_raw: equilibrium index is out of range.");
+    }
+    if (cp.i_ex_inner > cp.i_re || cp.i_ex_outer < cp.i_re ||
+        cp.i_ex_inner >= raw_r.size() || cp.i_ex_outer >= raw_r.size()) {
+        throw std::runtime_error("align_extrapolated_branches_to_raw: splice indices are out of range or on the wrong branch.");
+    }
+
+    const double inner_branch_r = r_inner.back();
+    const double inner_shift = raw_r[cp.i_ex_inner] - r_inner.back();
+    if (std::abs(inner_shift) > r_tolerance) {
+        for (double& value : r_inner) {
+            value += inner_shift;
+        }
+    }
+
+    const double outer_branch_r = r_outer.front();
+    const double outer_shift = raw_r[cp.i_ex_outer] - r_outer.front();
+    if (std::abs(outer_shift) > r_tolerance) {
+        for (double& value : r_outer) {
+            value += outer_shift;
+        }
+    }
+
+    std::cout << "Inner branch alignment at V=" << cp.V_ex
+              << ": raw r=" << raw_r[cp.i_ex_inner]
+              << ", extrapolated r before=" << inner_branch_r
+              << ", aligned r=" << r_inner.back()
+              << ", shift=" << (std::abs(inner_shift) > r_tolerance ? inner_shift : 0.0) << '\n';
+    std::cout << "Outer branch alignment at V=" << cp.V_ex
+              << ": raw r=" << raw_r[cp.i_ex_outer]
+              << ", extrapolated r before=" << outer_branch_r
+              << ", aligned r=" << r_outer.front()
+              << ", shift=" << (std::abs(outer_shift) > r_tolerance ? outer_shift : 0.0) << '\n';
+}
+
 void combine_inner_outer_rkr(std::vector<double>& V_inner, std::vector<double>& r_inner,
                              std::vector<double>& V_outer, std::vector<double>& r_outer,
                              std::vector<double>& raw_V,   std::vector<double>& raw_r,
@@ -584,26 +631,25 @@ void combine_inner_outer_rkr(std::vector<double>& V_inner, std::vector<double>& 
     V.clear();
     r.clear();
 
-    // Inner wall
-    for (size_t i = 0; i < r_inner.size(); ++i) {
+    // The raw inner anchor replaces the last extrapolated inner point.
+    for (size_t i = 0; i + 1 < r_inner.size(); ++i) {
         r.push_back(r_inner[i]);
         V.push_back(V_inner[i]);
     }
 
-    // Raw RKR, starting from patch index inP.i_s
+    // Include both raw anchors; the branch endpoints are omitted above and below.
     size_t start = static_cast<size_t>(cp.i_ex_inner);
     size_t end = static_cast<size_t>(cp.i_ex_outer);
-
-    if (start > raw_r.size())
-        start = raw_r.size();
-
-    for (size_t i = start; i < end; ++i) {
+    if (raw_r.size() != raw_V.size() || start > end || end >= raw_r.size()) {
+        throw std::runtime_error("combine_inner_outer_rkr: invalid raw RKR splice indices.");
+    }
+    for (size_t i = start; i <= end; ++i) {
         r.push_back(raw_r[i]);
         V.push_back(raw_V[i]);
     }
 
-    // Outer wall
-    for (size_t i = 0; i < r_outer.size(); ++i) {
+    // The raw outer anchor replaces the first extrapolated outer point.
+    for (size_t i = 1; i < r_outer.size(); ++i) {
         r.push_back(r_outer[i]);
         V.push_back(V_outer[i]);
     }
@@ -744,4 +790,3 @@ std::ostream& operator<<(std::ostream& os, const AllParams& p)
 
     return os;
 }
-

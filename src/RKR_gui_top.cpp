@@ -456,7 +456,7 @@ static wxSpinCtrlDouble* makeNum(wxWindow* parent, double val=0.0, double inc=0.
 class MyFrame : public wxFrame {
 public:
     MyFrame()
-    : wxFrame(nullptr, wxID_ANY, "Rydberg-Klein-Rees Potential",
+    : wxFrame(nullptr, wxID_ANY, "Rydberg-Klein-Rees (RKR) Studio",
               wxDefaultPosition, wxSize(1200, 800))  // normal window size
     {
         aspect_ = 1.5; // width/height fixed aspect ratio

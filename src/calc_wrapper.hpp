@@ -69,13 +69,31 @@ inline int calc_wrapper(std::vector<double>& V, std::vector<double>& r, std::vec
         cp.detectOutwardCurv= detectOutwardCurvature(V_raw, r_raw,  cp);
         //std::cout<< cp.detectOutwardCurv<<std::endl;
     }
-    s=SplineFit_to_RKR(V_raw, r_raw,V_spl, r_spl, cp);
-    estimateInnerWall_params(s, r_raw, V_raw, cp, rkr);
-    determineExtraPIndices(V_raw, r_raw, cp);
-    construct_ExtraPCurve(rkr, cp, V_i, r_i, V_o, r_o);
-   // std::cout <<"v_ex :" <<cp.v_ex <<" v_ex_level: "<< cp.v_ex_level << '\n';
-
-    combine_inner_outer_rkr(V_i, r_i, V_o, r_o, V_raw, r_raw, V, r, cp);
+    const bool needs_extrapolation = cp.detectInwardCurv || cp.detectOutwardCurv;
+    printf("Needs extrapolation: %s\n", needs_extrapolation ? "true" : "false");
+    const bool activate="false";
+    //if (activate) {//needs_extrapolation && activate) {
+    //    printf("debug index 1\n");
+    //    s=SplineFit_to_RKR(V_raw, r_raw,V_spl, r_spl, cp);
+    //    printf("debug index 2\n");
+    //    estimateInnerWall_params(s, r_raw, V_raw, cp, rkr);
+    //    printf("debug index 3\n");
+    //    determineExtraPIndices(V_raw, r_raw, cp);
+    //    printf("debug index 4\n");
+    //    construct_ExtraPCurve(rkr, cp, V_i, r_i, V_o, r_o);
+    //    printf("debug index 5\n");
+    //    align_extrapolated_branches_to_raw(V_raw, r_raw, V_i, r_i, V_o, r_o, cp);
+    //    // std::cout <<"v_ex :" <<cp.v_ex <<" v_ex_level: "<< cp.v_ex_level << '\n';
+    //    printf("debug index 6\n");
+    //    combine_inner_outer_rkr(V_i, r_i, V_o, r_o, V_raw, r_raw, V, r, cp);
+    //    printf("debug index 7\n");
+    //    smooth_extrapolation_joins_hermite(V_raw, r_raw, V_i, r_i, V_o, r_o, V, r, cp);
+    //    printf("debug index 8\n");
+    //}
+    //else {
+        V = V_raw;
+        r = r_raw;
+    //}
 
 
     //need to add the discrete energy levels to the output later.
@@ -110,4 +128,3 @@ inline int calc_morseV(std::vector<double>& V, std::vector<double>& r, AllParams
 
     return 0;
 }
-

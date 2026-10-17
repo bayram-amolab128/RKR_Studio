@@ -99,6 +99,13 @@ void setEquilibriumPoint( std::vector<double>& V,  std::vector<double>& r, CalcP
 void construct_ExtraPCurve(RKRContext &rkr, const CalcParam &cp,
                          std::vector<double>& V_inner, std::vector<double>& r_inner,
                          std::vector<double>& V_outer, std::vector<double>& r_outer);
+void align_extrapolated_branches_to_raw(const std::vector<double>& raw_V,
+                                        const std::vector<double>& raw_r,
+                                        std::vector<double>& V_inner,
+                                        std::vector<double>& r_inner,
+                                        std::vector<double>& V_outer,
+                                        std::vector<double>& r_outer,
+                                        const CalcParam& cp);
 void combine_inner_outer_rkr(std::vector<double> &V_inner, std::vector<double>& r_inner,
                              std::vector<double> &V_outer, std::vector<double>& r_outer, 
                              std::vector<double> &raw_V, std::vector<double>& raw_r, 
