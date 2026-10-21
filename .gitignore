@@ -7,9 +7,6 @@
 !molecular_data/
 !molecular_data/**/*.txt
 !molecular_data/**/*.dat
-!output/
-!output/**/*.txt
-!output/**/*.dat
 !RKR_Studio*.exe
 
 # IDE and editor files
