@@ -1,14 +1,12 @@
 name = NaK
-state = X1S
+state = X1Sg
 kaiser = 0
-intmethod = Fleming
+
 Vmax = 70
-space = 0.001
-ladderspace = 10
-errortol = 1e-09
+step size = 0.01
+
 m1 = 22.9898
 m2 = 39.0983
-netcharge = 0
 
 Y1,0 = 124.13
 Y2,0 = -0.511

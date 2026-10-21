@@ -1,14 +1,13 @@
 name = K2
-state = C1Pi_u
+state = C1Pu
 kaiser = 0
-intmethod = Fleming
+
 Vmax = 230
-space = 0.01
-ladderspace = 1
-errortol = 1e-9
+step size = 0.1
+
 m1 = 39.0983
 m2 = 39.0983
-netcharge = 0
+
 
 Y1,0 = 61.48
 Y2,0 = -0.13

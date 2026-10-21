@@ -15,6 +15,9 @@
 
 #include <chrono>
 
+#include <cstdio>
+
+
 // ---- External data (filled by your calc) ----
 std::vector<double> r;    // X values
 std::vector<double> E;    // Y values
@@ -459,6 +462,8 @@ public:
     : wxFrame(nullptr, wxID_ANY, "Rydberg-Klein-Rees (RKR) Studio",
               wxDefaultPosition, wxSize(1200, 800))  // normal window size
     {
+        // Disable console output on Windows
+        freopen("NUL", "w", stdout);
         aspect_ = 1.5; // width/height fixed aspect ratio
 
         auto* panel = new wxPanel(this);
@@ -824,42 +829,40 @@ private:
         p.morse.ke = p.ex.ke;
         //p.morse.Re is copied from cp.re after calc_wrapper(..) is called.;
 
-        std::ofstream timing_file("cpp_timing_all.txt");
+        //std::ofstream timing_file("cpp_timing_all.txt");
 
         // header
-        timing_file << "Step_Size N_Points Timing_ms\n";
+        //timing_file << "Step_Size N_Points Timing_ms\n";
 
 
-        std::vector<double> steps;
+        //std::vector<double> steps;
 
-        std::ifstream file("steps.txt");
-        printf("Here is 1\n");
+        //std::ifstream file("steps.txt");
+        //printf("Here is 1\n");
 
-        if (!file.is_open())
+        //if (!file.is_open())
             //throw std::runtime_error("Could not open file: " + "steps.txt");
 
        
-         printf("Here is 2\n");
-        for(int i = 0; i < 100; i++)
-        {
-            double step;
-            file >> step;
+        //printf("Here is 2\n");
+        //for(int i = 0; i < 100; i++)
+        //{
+        //    double step;
+        //    file >> step;
+        //    if (file.fail())
+        //        break;
+        //    steps.push_back(step);
+        //    printf("Step %d: %f\n", i, step);
+        //}
 
-            if (file.fail())
-                break;
-
-            steps.push_back(step);
-            printf("Step %d: %f\n", i, step);
-        }
-
-        for(int i = 0; i < 100; i++)
-        {
-            
-            //printf("Step %d: %f\n", i, steps[i]);
-        }
+        //for(int i = 0; i < 100; i++)
+        //{
+        //    
+        //    //printf("Step %d: %f\n", i, steps[i]);
+        //}
 
         gsl_set_error_handler_off();        
-        for(int i = 0; i < 1; i++) {  
+        //for(int i = 0; i < 1; i++) {  
             // Read all parameters once from the input text
         if (!ReadConstantsFromText("I2B.dat", p))
         {
@@ -873,7 +876,7 @@ private:
         output->AppendText(wxString::Format("Performing turning point calculations... wait!\n"));
         r.clear(); E.clear();
 
-        p.ex.space  = steps[i];
+        //p.ex.space  = steps[i];
         //auto start = std::chrono::high_resolution_clock::now();
         auto start = std::chrono::steady_clock::now();
         
@@ -894,31 +897,31 @@ private:
 
         // write:
         // step_size   npoints   time_ms
-        timing_file<<std::fixed << std::setprecision(6)
-        << steps[i] << " "
-        << npoints << " "
-        << elapsed_ms
-        << "\n";
-
+        //timing_file<<std::fixed << std::setprecision(6)
+        //<< steps[i] << " "
+        //<< npoints << " "
+        //<< elapsed_ms
+        //<< "\n";
         
         output->AppendText(wxString::Format("Calculation Complete, elapsed time = %f seconds.\n", elapsed_ms / 1000.0));
-        }
-        timing_file.close();
+        //}
+        //timing_file.close();
 
         //save in file for further analysis
         printf("=============\n"); 
-        printf(p.state_name.c_str());
-        printf("=============\n"); 
+        printf("%s\n", p.state_name.c_str());
+        printf("\n=============\n"); 
 
         try {
             std::filesystem::create_directories("./output");
         } catch (const std::exception& e) {
             output->AppendText(wxString::Format("Failed to create output folder: %s\n", e.what()));
         }
-        WriteRGToFile("./output/PEC.dat",r, E );
+        std::string output_filename = "./output/" + molecule_name + "-" + p.state_name + "_output.dat";
+        WriteRGToFile(output_filename, r, E);
         // Plot from external vectors
         plot->SetDataXY(r, E);
-        output->AppendText(wxString::Format("Plot is updated and Evsr data is saved in ./output/PEC.dat.\n"));
+        output->AppendText(wxString::Format("Plot is updated and Evsr data is saved in %s.\n", output_filename.c_str()));
 
         //auto [v_n, E_n] = calc_discrete(ve, p.ex.Vmax, p.ex.Te, dissociationEnergy_rel);
 
@@ -1126,6 +1129,7 @@ private:
 
             if (key == "name") {
                 printf(val.c_str());
+                molecule_name = val;
                 printf("\n");
                 //titleCtrl->SetValue(val);
                 ++count;

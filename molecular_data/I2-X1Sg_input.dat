@@ -3,11 +3,11 @@ state = X1Sg
 kaiser = 0
 
 Vmax = 100
-space = 0.001
+step size = 0.1
 
 m1 = 126.90447
 m2 = 126.90447
-net charge = 0
+
 
 Y1,0 = 214.5481
 Y2,0 = -0.616259

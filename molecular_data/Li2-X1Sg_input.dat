@@ -1,14 +1,13 @@
 name = Li2
 state = X1Sg
 kaiser = 0
-intmethod = Fleming
+
 Vmax = 100
-space = 0.01
-ladderspace = 3
-errortol = 1e-09
+step size = 0.01
+
 m1 = 7.016004
 m2 = 7.016004
-netcharge = 0
+
 
 Y1,0 = 351.43
 Y2,0 = -2.61
