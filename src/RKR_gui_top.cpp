@@ -917,11 +917,14 @@ private:
         } catch (const std::exception& e) {
             output->AppendText(wxString::Format("Failed to create output folder: %s\n", e.what()));
         }
-        std::string output_filename = "./output/" + molecule_name + "-" + p.state_name + "_output.dat";
+        //std::string output_filename = "./output/" + molecule_name + "-" + p.state_name + "_output.dat";
+        std::string output_filename = "./output/PEC.dat";// + molecule_name + "-" + p.state_name + "_output.dat";
+
         WriteRGToFile(output_filename, r, E);
         // Plot from external vectors
         plot->SetDataXY(r, E);
-        output->AppendText(wxString::Format("Plot is updated and Evsr data is saved in %s.\n", output_filename.c_str()));
+        //output->AppendText(wxString::Format("Plot is updated and Evsr data is saved in %s.\n", output_filename.c_str()));
+        output->AppendText(wxString::Format("Plot is updated and Evsr data is saved in output/PEC.dat.\n"));
 
         //auto [v_n, E_n] = calc_discrete(ve, p.ex.Vmax, p.ex.Te, dissociationEnergy_rel);
 
