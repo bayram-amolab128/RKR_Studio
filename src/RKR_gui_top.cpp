@@ -341,11 +341,11 @@ private:
         }
 
         // --- Axis titles ---
-        dc.DrawText(wxString::FromUTF8("Intermolecular Distance (r) in Å"),
+        dc.DrawText(wxString::FromUTF8("Internuclear Distance (r) in Å"),
                     L + plotW/2 - 60, T + plotH + 25);
 
         // Rotated Y-axis label (90° CCW)
-        wxString ylabel = wxString::FromUTF8("Total Energy (E) in cm⁻¹");
+        wxString ylabel = wxString::FromUTF8("Potential Energy (E) in cm⁻¹");
         wxSize ts = dc.GetTextExtent(ylabel);
         int ylabX = L - 75;
         int ylabY = T + plotH/2 + ts.GetWidth()/2;
@@ -673,7 +673,7 @@ public:
 
         // Right column title
         auto* titleText = new wxStaticText(
-            panel, wxID_ANY, "Potential Energy vs. Intermolecular Distance");
+            panel, wxID_ANY, "Potential Energy vs. Internuclear Distance");
         titleText->SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
         titleText->SetForegroundColour(*wxBLACK);
 
