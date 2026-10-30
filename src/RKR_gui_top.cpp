@@ -521,7 +521,7 @@ public:
         auto* bvBox = new wxStaticBox(panel, wxID_ANY, wxString::FromUTF8("B(v) parameters (in cm⁻¹)"));
         auto* bvSizer = new wxStaticBoxSizer(bvBox, wxVERTICAL);
         // Make B(v) region scrollable to keep layout compact
-        auto* bvScroll = new wxScrolledWindow(panel, wxID_ANY, wxDefaultPosition, wxSize(-1, 160), wxVSCROLL);
+        auto* bvScroll = new wxScrolledWindow(panel, wxID_ANY, wxDefaultPosition, wxSize(-1, 220), wxVSCROLL);
         bvScroll->SetScrollRate(5, 5);
         auto* bvGrid  = new wxFlexGridSizer(0, 2, 6, 8);
         addField(bvGrid, bvScroll, wxString::FromUTF8("Y₀,₁ " ),   bv.Be,  0.67264,  0.001, 18,
@@ -559,7 +559,7 @@ public:
         bvGrid->AddGrowableCol(1, 1);
         bvScroll->SetSizer(bvGrid);
         bvScroll->FitInside();
-        bvSizer->Add(bvScroll, 0, wxEXPAND | wxALL, 8);
+        bvSizer->Add(bvScroll, 1, wxEXPAND | wxALL, 8);
 
         // Extras (left)
         auto* extraBox = new wxStaticBox(panel, wxID_ANY, "General parameters");
@@ -590,20 +590,20 @@ public:
         extraSizer->Add(extraGrid, 0, wxEXPAND | wxALL, 8);
 
         // Morse parameters (right beside Extras)
-        auto* morseBox = new wxStaticBox(panel, wxID_ANY, "Morse parameters");
-        auto* morseSizer = new wxStaticBoxSizer(morseBox, wxVERTICAL);
-        auto* morseGrid  = new wxFlexGridSizer(0, 2, 6, 8);
-        addField(morseGrid, panel, wxString::FromUTF8("Dₑ (cm⁻¹) "),  morse.De,  10000.0, 1.0, 8,
-                 wxString::FromUTF8("Morse potential well depth Dₑ."));
-        addField(morseGrid, panel, wxString::FromUTF8("kₑ (cm⁻¹ Å⁻²) "),  morse.ke,  1.0,     0.01, 8,
-                 wxString::FromUTF8("Morse force constant kₑ."));
-        morseGrid->AddGrowableCol(1, 1);
-        morseSizer->Add(morseGrid, 0, wxEXPAND | wxALL, 8);
+        //auto* morseBox = new wxStaticBox(panel, wxID_ANY, "Morse parameters");
+        //auto* morseSizer = new wxStaticBoxSizer(morseBox, wxVERTICAL);
+        //auto* morseGrid  = new wxFlexGridSizer(0, 2, 6, 8);
+        //addField(morseGrid, panel, wxString::FromUTF8("Dₑ (cm⁻¹) "),  morse.De,  10000.0, 1.0, 8,
+        //         wxString::FromUTF8("Morse potential well depth Dₑ."));
+        //addField(morseGrid, panel, wxString::FromUTF8("kₑ (cm⁻¹ Å⁻²) "),  morse.ke,  1.0,     0.01, 8,
+        //         wxString::FromUTF8("Morse force constant kₑ."));
+        //morseGrid->AddGrowableCol(1, 1);
+        //morseSizer->Add(morseGrid, 0, wxEXPAND | wxALL, 8);
 
         // Checkbox moved here (inside Morse parameters)
-        showMorse = new wxCheckBox(panel, wxID_ANY, "Show Morse potential overlay");
-        showMorse->SetValue(false);
-        morseSizer->Add(showMorse, 0, wxTOP | wxLEFT | wxRIGHT, 4);
+        //showMorse = new wxCheckBox(panel, wxID_ANY, "Show Morse potential overlay");
+        //showMorse->SetValue(false);
+       //morseSizer->Add(showMorse, 0, wxTOP | wxLEFT | wxRIGHT, 4);
 
 
         // ---- File picker + Load + Run all in one row ----
@@ -650,8 +650,8 @@ public:
 
         // Right parameter column = B(v) on top, Morse underneath
         auto* rightParamCol = new wxBoxSizer(wxVERTICAL);
-        rightParamCol->Add(bvSizer,    0, wxEXPAND | wxBOTTOM, 8);
-        rightParamCol->Add(morseSizer, 0, wxEXPAND);
+        rightParamCol->Add(bvSizer,    1, wxEXPAND);
+        //rightParamCol->Add(morseSizer, 0, wxEXPAND);
                 
         // G(v) on left, (B(v)+Morse) stacked on right
         auto* twoParamCols = new wxBoxSizer(wxHORIZONTAL);
@@ -689,7 +689,7 @@ public:
         // Events
         runBtn->Bind(wxEVT_BUTTON,  &MyFrame::OnRun,        this);
         loadBtn->Bind(wxEVT_BUTTON, &MyFrame::OnLoadParams, this);
-        showMorse->Bind(wxEVT_CHECKBOX, &MyFrame::OnToggleMorse, this);
+        //showMorse->Bind(wxEVT_CHECKBOX, &MyFrame::OnToggleMorse, this);
 
         // keep a reasonable min size and bind resize to maintain aspect ratio
         SetMinSize(wxSize(900, 600));
@@ -706,7 +706,7 @@ private:
     wxTextCtrl* output{};
     wxFilePickerCtrl* filePicker{};
     PlotPanel*  plot{};
-    wxCheckBox* showMorse{};
+    //wxCheckBox* showMorse{};
     wxCheckBox* kaiserCheck{};
 
 
@@ -822,12 +822,12 @@ private:
         //output->AppendText(wxString::Format("Value of Te %f!\n", p.ex.Te));
 
         // Morse (overlay) params
-        p.ex.De = val(morse.De, 0.0);
-        p.ex.ke = val(morse.ke, 0.0);
-        p.morse.Te = p.ex.Te;
-        p.morse.De = p.ex.De;
-        p.morse.ke = p.ex.ke;
-        //p.morse.Re is copied from cp.re after calc_wrapper(..) is called.;
+        //p.ex.De = val(morse.De, 0.0);
+        //p.ex.ke = val(morse.ke, 0.0);
+        //p.morse.Te = p.ex.Te;
+        //p.morse.De = p.ex.De;
+        //p.morse.ke = p.ex.ke;
+        //p.morse.Re is copied from cp.re after calc_wrapper(..) is called;
 
         //std::ofstream timing_file("cpp_timing_all.txt");
 
@@ -881,7 +881,7 @@ private:
         auto start = std::chrono::steady_clock::now();
         
         calc_wrapper(E, r, E_v, r_v, v, p, cp);   //calculates E and r values;
-        calc_morseV(VMorse, r, p);
+        //calc_morseV(VMorse, r, p);
         
 
         //auto end   = std::chrono::high_resolution_clock::now();
@@ -1000,42 +1000,42 @@ private:
     }
 
 
-    void OnToggleMorse(wxCommandEvent&) {
-        std::cout << "Morse overlay toggled: " << (showMorse->GetValue() ? "ON" : "OFF") << std::endl;
-        BuildOrClearMorseOverlay(VMorse, r);
-        std::cout << "Morse overlay updated." << std::endl;
-    }
+    //void OnToggleMorse(wxCommandEvent&) {
+    //    std::cout << "Morse overlay toggled: " << (showMorse->GetValue() ? "ON" : "OFF") << std::endl;
+    //    BuildOrClearMorseOverlay(VMorse, r);
+    //    std::cout << "Morse overlay updated." << std::endl;
+    //}
 
-    void BuildOrClearMorseOverlay(const std::vector<double>& Vmorse, const std::vector<double>& r) {
-        if (!showMorse->GetValue()) {
-            plot->SetOverlayVisible(false);
-            plot->SetOverlayXY({}, {});
-            return;
-        }
+    //void BuildOrClearMorseOverlay(const std::vector<double>& Vmorse, const std::vector<double>& r) {
+    //    if (!showMorse->GetValue()) {
+    //        plot->SetOverlayVisible(false);
+    //        plot->SetOverlayXY({}, {});
+    //        return;
+    //    }
 
-        // Need valid parameters (De>0, Ke>0) to build a Morse curve
-        MorseParams mp{ lastP_.ex.Te, lastP_.ex.De, lastP_.ex.Re, lastP_.ex.ke };
-        if (!(mp.De > 0.0 && mp.ke > 0.0)) {
-            output->AppendText("Morse overlay disabled: require De>0 and ke>0.\n");
-            plot->SetOverlayVisible(false);
-            plot->SetOverlayXY({}, {});
-            return;
-        }
-
-        if (r.empty()) {
-            plot->SetOverlayVisible(false);
-            plot->SetOverlayXY({}, {});
-            return;
-        }
-
-        auto [xminIt, xmaxIt] = std::minmax_element(r.begin(), r.end());
-        double rmin = *xminIt, rmax = *xmaxIt;
-        if (rmax <= rmin) { rmax = rmin + 1.0; }
-
-    
-        plot->SetOverlayXY(r, Vmorse);
-        plot->SetOverlayVisible(true);
-    }
+    //    // Need valid parameters (De>0, Ke>0) to build a Morse curve
+    //    MorseParams mp{ lastP_.ex.Te, lastP_.ex.De, lastP_.ex.Re, lastP_.ex.ke };
+    //    if (!(mp.De > 0.0 && mp.ke > 0.0)) {
+    //        output->AppendText("Morse overlay disabled: require De>0 and ke>0.\n");
+    //        plot->SetOverlayVisible(false);
+    //        plot->SetOverlayXY({}, {});
+    //        return;
+    //    }
+//
+    //    if (r.empty()) {
+    //        plot->SetOverlayVisible(false);
+    //        plot->SetOverlayXY({}, {});
+    //        return;
+    //    }
+//
+    //    auto [xminIt, xmaxIt] = std::minmax_element(r.begin(), r.end());
+    //    double rmin = *xminIt, rmax = *xmaxIt;
+    //    if (rmax <= rmin) { rmax = rmin + 1.0; }
+//
+    //
+    //    plot->SetOverlayXY(r, Vmorse);
+    //    plot->SetOverlayVisible(true);
+    //}
 
     // load parameters from file and update controls
     void OnLoadParams(wxCommandEvent&) {
